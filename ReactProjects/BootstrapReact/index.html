@@ -1,12 +1,84 @@
 <!DOCTYPE html>
 <html>
-      <head>
-            <meta charset="utf-8">
-            <title>Welcome</title>
-            <script src="js/react.js"></script>
-            <script src="js/react-dom.js"></script>
-      </head>
-      <body>
 
-      </body>
+<head>
+    <meta charset="utf-8">
+    <title>Welcome</title>
+    <script src="js/react.js"></script>
+    <script src="js/react-dom.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.34/browser.js"></script>
+
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <div id="app"></div>
+
+    <div class="container">
+
+
+
+
+    </div>
+
+
+    <script type="text/babel">
+        var Navbar = React.createClass({ render: function(){ return (
+        <div>
+            <nav className="navbar navbar-default">
+                <div className="container-fluid">
+
+                    <div className="navbar-header">
+                        <button type="button" className="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                            <span className="sr-only">Toggle navigation</span>
+                            <span className="icon-bar"></span>
+                            <span className="icon-bar"></span>
+                            <span className="icon-bar"></span>
+                        </button>
+                        <a className="navbar-brand" href="#">My Website</a>
+                    </div>
+
+
+                    <div className="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                        <ul className="nav navbar-nav">
+                            <li className="active"><a href="#">Home <span className="sr-only">(current)</span></a></li>
+                            <li><a href="#">About</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </div>
+        ) } }); var Jumbotron = React.createClass({ render: function() { return (
+        <div className="jumbotron">
+            <div className="container">
+                <h1>Hello, world!</h1>
+                <p>This is a template for a simple marketing or informational website. It includes a large callout called a jumbotron and three supporting pieces of content. Use it as a starting point to create something more unique.</p>
+                <p><a className="btn btn-primary btn-lg" href="#" role="button">Learn more &raquo;</a></p>
+            </div>
+        </div>
+        ) } }); var PageHome = React.createClass({ render: function() { return (
+
+        <div className="container">
+            <div className="row">
+                Main content
+            </div>
+        </div> ) } }); var Footer = React.createClass({ render: function() { return (
+        <div className="container">
+            <hr />
+
+            <footer>
+                <p>&copy; 2016 Company, Inc.</p>
+            </footer>
+        </div> ) } }); var App = React.createClass({ render: function() { return (
+        <div>
+            <Navbar />
+            <Jumbotron />
+            <PageHome />
+            <Footer />
+        </div> ) } }); ReactDOM.render(
+        <App />, document.getElementById('app') );
+    </script>
+</body>
+
 </html>
