@@ -10,10 +10,11 @@ class QuestionList extends Component {
             <div className="questions">
                 {
                     this.props.questions.map(question => {
-                        return <Question question={question} key={question.id} {...this.state} />
+                        if(question.id == this.props.current) {
+                            return <Question question={question} key={question.id} {...this.state} />
+                        }
                     })
                 }
-
             </div>
 
         )
