@@ -19756,14 +19756,37 @@ var AppActions = require('../actions/AppActions');
 var AppStore = require('../stores/AppStore');
 var SearchForm = require('./SearchForm.js');
 
+function getAppState() {
+    return {
+
+    }
+}
+
 var App = React.createClass({displayName: "App",
+    getInitialState: function() {
+        return getAppState();
+    },
+
+    componentDidMount: function() {
+        AppStore.addChangeListener(this._onChange);
+    },
+
+    componentWillUnmount: function() {
+        AppStore.removeChangeListener(this._onChange);
+    },
+
     render: function() {
         return(
             React.createElement("div", null, 
                 React.createElement(SearchForm, null)
             )
         )
+    },
+
+    _onChange: function() {
+        this.setState(getAppState());
     }
+
 });
 
 module.exports = App;
@@ -19860,7 +19883,11 @@ AppDispatcher.register(function(payload) {
     var action = payload.action;
 
     switch(action.actionType) {
-
+        case AppConstants.SEARCH_MOVIES:
+            console.log("Searching for movie2: "+ action.movie.title);
+            AppAPI.searchMovies(action.movie);
+            AppStore.emit(CHANGE_EVENT);
+            break;
     }
 
     return true;
