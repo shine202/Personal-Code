@@ -24,7 +24,8 @@ var App = React.createClass({
     },
 
     render: function() {
-        console.log(this.state.movies);
+        //console.log(this.state.movies);
+
         if(this.state.movies == '') {
             var movieResults = '';
         }
@@ -34,7 +35,7 @@ var App = React.createClass({
         return(
             <div>
                 <SearchForm />
-                
+                {movieResults}
             </div>
         )
     },

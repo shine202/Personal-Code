@@ -13,7 +13,7 @@ var AppActions = {
         console.log("Receiving: "+movies);
         AppDispatcher.handleViewAction({
             actionType: AppConstants.RECEIVE_MOVIE_RESULTS,
-            movie: movies
+            movies: movies
         });
     }
 }

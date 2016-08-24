@@ -9,8 +9,8 @@ module.exports = {
             success: function(data) {
                 AppActions.receiveMovieResults(data.Search);
             }.bind(this),
-            error: function(xhr, status, error) {
-                alert(error);
+            error: function(xhr, status, err) {
+                alert(err);
             }.bind(this)
         });
     }

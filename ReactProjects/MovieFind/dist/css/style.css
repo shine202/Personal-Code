@@ -10,3 +10,7 @@ body {
     border: 1px #ccc solid;
     border-radius: 10px;
 }
+
+img {
+    width: 100%;
+}

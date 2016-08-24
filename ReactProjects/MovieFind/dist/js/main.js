@@ -19749,7 +19749,7 @@ var AppActions = {
         console.log("Receiving: "+movies);
         AppDispatcher.handleViewAction({
             actionType: AppConstants.RECEIVE_MOVIE_RESULTS,
-            movie: movies
+            movies: movies
         });
     }
 }
@@ -19784,7 +19784,8 @@ var App = React.createClass({displayName: "App",
     },
 
     render: function() {
-        console.log(this.state.movies);
+        //console.log(this.state.movies);
+
         if(this.state.movies == '') {
             var movieResults = '';
         }
@@ -19793,8 +19794,8 @@ var App = React.createClass({displayName: "App",
         }
         return(
             React.createElement("div", null, 
-                React.createElement(SearchForm, null)
-                
+                React.createElement(SearchForm, null), 
+                movieResults
             )
         )
     },
@@ -19813,9 +19814,25 @@ var AppStore = require('../stores/AppStore');
 
 var Movie = React.createClass({displayName: "Movie",
     render: function() {
+
+        var link = 'http://www.imdb.com/title/'+this.props.movie.imdbID;
+
         return(
             React.createElement("div", {className: "well"}, 
-                this.props.movie.Title
+                React.createElement("div", {className: "row"}, 
+                    React.createElement("div", {className: "col-md-4"}, 
+                        React.createElement("img", {className: "thumbnail", src: this.props.movie.Poster})
+                    ), 
+                    React.createElement("div", {className: "col-md-8"}, 
+                        React.createElement("h4", null, this.props.movie.Title), 
+                        React.createElement("ul", {className: "list-group"}, 
+                            React.createElement("li", {className: "list-group-item"}, "Year Released: ", this.props.movie.Year, " "), 
+                            React.createElement("li", {className: "list-group-item"}, "Imdb ID: ", this.props.movie.imdbID, " ")
+                        ), 
+
+                        React.createElement("a", {className: "btn btn-primary", href: link}, " View on IMDB")
+                    )
+                )
             )
         )
     },
@@ -19895,7 +19912,7 @@ var AppDispatcher = assign(new Dispatcher(), {
             source: 'VIEW_ACTION',
             action: action
         }
-        this.dispatch(payload)
+        this.dispatch(payload);
     }
 });
 
@@ -19924,14 +19941,13 @@ var _movies = [];
 var _selected = '';
 
 var AppStore = assign({}, EventEmitter.prototype, {
+
     setMovieResults: function(movies) {
         _movies = movies;
     },
-
     getMovieResults: function() {
         return _movies;
     },
-
     emitChange: function() {
         this.emit(CHANGE_EVENT);
     },
@@ -19974,8 +19990,8 @@ module.exports = {
             success: function(data) {
                 AppActions.receiveMovieResults(data.Search);
             }.bind(this),
-            error: function(xhr, status, error) {
-                alert(error);
+            error: function(xhr, status, err) {
+                alert(err);
             }.bind(this)
         });
     }

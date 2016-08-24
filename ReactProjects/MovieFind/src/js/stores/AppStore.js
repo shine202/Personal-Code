@@ -10,14 +10,13 @@ var _movies = [];
 var _selected = '';
 
 var AppStore = assign({}, EventEmitter.prototype, {
+
     setMovieResults: function(movies) {
         _movies = movies;
     },
-
     getMovieResults: function() {
         return _movies;
     },
-
     emitChange: function() {
         this.emit(CHANGE_EVENT);
     },
