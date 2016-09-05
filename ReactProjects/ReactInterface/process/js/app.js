@@ -1,61 +1,121 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
+var _ = require('lodash');
+
+var AptList = require('./AptList');
+var AddAppointment = require('./AddAppointment');
+var SearchAppointments = require('./SearchAppointments');
 
 var MainInterface = React.createClass({
-    getInitialState: function() {
-        return {
-            data: [
-              {
-                "petName": "Rocku",
-                "ownerName": "Hassum Harrod",
-                "aptDate": "2016-06-20 15:30",
-                "aptNotes": "This Chihuahua has not eaten for three days and is lethargic"
-              },
-              {
-                "petName": "Spot",
-                "ownerName": "Constance Smith",
-                "aptDate": "2016-06-24 08:30",
-                "aptNotes": "This German Shepherd is having some back pain"
-              },
-              {
-                "petName": "Goldie",
-                "ownerName": "Barot Bellingham",
-                "aptDate": "2016-06-22 15:50",
-                "aptNotes": "This Goldfish has some weird spots in the belly"
-              },
-              {
-                "petName": "Mitten",
-                "ownerName": "Hillary Goldwyn",
-                "aptDate": "2016-06-21 9:15",
-                "aptNotes": "Cat has excessive hairballs"
-              }
-            ]
-        }
-    },
+  getInitialState: function() {
+    return {
+      aptBodyVisible: false,
+      orderBy: 'petName',
+      orderDir: 'asc',
+      queryText: '',
+      myAppointments: []
+    } //return
+  }, //getInitialState
 
-    render: function() {
+  componentDidMount: function() {
+    this.serverRequest = $.get('./js/data.json', function(result) {
+      var tempApts = result;
+      this.setState({
+        myAppointments: tempApts
+      }); //setState
+    }.bind(this));
+  }, //componentDidMount
 
-        return (
-            <div className="interface">
-                <ul className="item-list media-list">
-                    <li className="pet-info media-body">
-                        <div className="pet-head">
-                            <span className="pet-name">{this.state.data[0].petName}</span>
-                            <span className="apt-date pull-right">{this.state.data[0].aptDate}</span>
-                        </div>
-                        <div className="owner-name"><span className="label-item>Owner: </span>
-                            {this.state.data[0].ownerName}
-                        </div>
-                        <div className="apt-notes">{this.state.data[0].aptNotes}</div>
-                    </li>
-                </ul>
-           </div>
-        )
-    }
-});
+  componentWillUnmount: function() {
+    this.serverRequest.abort();
+  }, //componentWillUnmount
 
+  deleteMessage: function(item) {
+    var allApts = this.state.myAppointments;
+    var newApts = _.without(allApts, item);
+    this.setState({
+      myAppointments: newApts
+    }); //setState
+  }, //deleteMessage
+
+  toggleAddDisplay: function() {
+    var tempVisibility = !this.state.aptBodyVisible;
+    this.setState({
+      aptBodyVisible: tempVisibility
+    }); //setState
+  }, //toggleAddDisplay
+
+  addItem: function(tempItem) {
+    var tempApts = this.state.myAppointments;
+    tempApts.push(tempItem);
+    this.setState({
+      myAppointments: tempApts
+    }); //setState
+  }, //addItem
+
+  reOrder: function(orderBy, orderDir) {
+    this.setState({
+      orderBy: orderBy,
+      orderDir: orderDir
+    }); //setState
+  }, //reOrder
+
+  searchApts(q) {
+    this.setState({
+      queryText: q
+    }); //setState
+  }, //searchApts
+
+  render: function() {
+    var filteredApts = [];
+    var orderBy = this.state.orderBy;
+    var orderDir = this.state.orderDir;
+    var queryText = this.state.queryText;
+    var myAppointments = this.state.myAppointments;
+
+    myAppointments.forEach(function(item) {
+      if(
+        (item.petName.toLowerCase().indexOf(queryText)!=-1) ||
+        (item.ownerName.toLowerCase().indexOf(queryText)!=-1) ||
+        (item.aptDate.toLowerCase().indexOf(queryText)!=-1) ||
+        (item.aptNotes.toLowerCase().indexOf(queryText)!=-1)
+      ) {
+        filteredApts.push(item);
+      }
+    }); //forEach
+
+    filteredApts = _.orderBy(filteredApts, function(item) {
+      return item[orderBy].toLowerCase();
+    }, orderDir);//orderBy
+
+    filteredApts = filteredApts.map(function(item, index) {
+      return(
+        <AptList key = { index }
+          singleItem = { item }
+          whichItem = { item }
+          onDelete = { this.deleteMessage } />
+      ) //return
+    }.bind(this)); //filteredApts.map
+    return (
+      <div className="interface">
+        <AddAppointment
+          bodyVisible = { this.state.aptBodyVisible }
+          handleToggle = { this.toggleAddDisplay }
+          addApt = { this.addItem }
+        />
+        <SearchAppointments
+          orderBy = { this.state.orderBy }
+          orderDir = { this.state.orderDir }
+          onReOrder = { this.reOrder }
+          onSearch = { this.searchApts }
+        />
+        <ul className="item-list media-list">{filteredApts}</ul>
+      </div>
+    ) //return
+  } //render
+}); //MainInterface
 
 ReactDOM.render(
-    <MainInterface />,
-    document.getElementById('petAppointments')
-);
+  <MainInterface />,
+  document.getElementById('petAppointments')
+); //render
