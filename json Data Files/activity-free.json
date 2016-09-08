@@ -1,0 +1,74 @@
+{
+  "activities": [
+    {
+      "activity": {
+        "fullName": "Lou Moss",
+        "action_phrase": "Lou renamed a task",
+        "mins_ago": "24 mins ago"
+      }
+    },
+    {
+      "activity": {
+        "fullName": "Warren Shelton",
+        "action_phrase": "Warren deleted a task",
+        "mins_ago": "44 mins ago"
+      }
+    },
+    {
+      "activity": {
+        "fullName": "Emily Powell",
+        "action_phrase": "Emily edited a task",
+        "mins_ago": "16 mins ago"
+      }
+    },
+    {
+      "activity": {
+        "fullName": "Harriet Benson",
+        "action_phrase": "Harriet declined a task",
+        "mins_ago": "53 mins ago"
+      }
+    },
+    {
+      "activity": {
+        "fullName": "Rose Peterson",
+        "action_phrase": "Rose declined a task",
+        "mins_ago": "42 mins ago"
+      }
+    },
+    {
+      "activity": {
+        "fullName": "Chris Thomas",
+        "action_phrase": "Chris created a task",
+        "mins_ago": "43 mins ago"
+      }
+    },
+    {
+      "activity": {
+        "fullName": "Tommy Watson",
+        "action_phrase": "Tommy commented on a task",
+        "mins_ago": "36 mins ago"
+      }
+    },
+    {
+      "activity": {
+        "fullName": "Irene Rhodes",
+        "action_phrase": "Irene commented on a task",
+        "mins_ago": "28 mins ago"
+      }
+    },
+    {
+      "activity": {
+        "fullName": "Cora Austin",
+        "action_phrase": "Cora duplicated a task",
+        "mins_ago": "21 mins ago"
+      }
+    },
+    {
+      "activity": {
+        "fullName": "Ora Watson",
+        "action_phrase": "Ora deleted a task",
+        "mins_ago": "21 mins ago"
+      }
+    }
+  ]
+}
