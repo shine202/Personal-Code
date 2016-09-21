@@ -8,7 +8,7 @@ public class Euler14 {
           LinkedList<Long> list = new LinkedList<Long>();
           long length = 0;
 
-          int rest = 0;
+          int res = 0;
 
           for(int i = 10; i < 1000000; i++) {
 
