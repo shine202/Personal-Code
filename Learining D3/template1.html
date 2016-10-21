@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>First D3 Template</title>
+    <style>
+        .node {
+            fill: #ccc;
+            stroke: #fff;
+            stroke-width: 2px;
+        }
+    </style>
+</head>
+<body style="background: lightgray;">
+    
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <script>
+        var width = 640,
+            height = 480;
+
+        var nodes = [
+            {name: 'Shkelqim'},
+            {name: 'Durim'},
+            {name: 'Liridon'}
+        ];
+        
+        var links = [
+            {name: 'Shkelqim', source: 0, target: 1},
+            {name: 'Durim', source: 1, target: 2},
+            {name: 'Liridon', source: 2, target: 0}
+        ];
+
+        var svg = d3.select('body').append('svg')
+            .attr('width', width)
+            .attr('height', height);
+
+        var node = svg.selectAll('.node')
+            .data(nodes)
+            .enter().append('circle')
+            .attr('class', 'node')
+            .attr('cx', function(d, i) { return (i+1) * (width/4); })
+            .attr('cy', function(d, i) { return height / 2; })
+            .attr('r', width * 0.05);
+
+        var force = d3.layout.force()
+            .size([width, height])
+            .nodes(nodes)
+            .start();
+    </script>
+</body>
+</html>
