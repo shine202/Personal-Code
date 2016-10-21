@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Link Strength Template</title>
+    <style>
+        .node {
+            fill: #ccc;
+            stroke: #fff;
+            stroke-width: 2px;
+        }
+        
+        path.link {
+            fill: none;
+            stroke: #777;
+            stroke-width: 2px;
+        }
+        
+        h1 {
+            padding: 10px;
+        }
+    </style>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+</head>
+
+<body>
+
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <script>
+
+        var strength = document.URL.split("#")[1] || 1;
+
+        var header = d3.select('body').append('h1')
+            .html("linkStrength("+strength+")")
+            .style("text-align", "center");
+        
+        var width = 640,
+            height = 480;
+
+        var nodes = [
+            {name: 'Shkelqim'},
+            {name: 'Durim'},
+            {name: 'Liridon'}
+        ];
+        
+        var links = [
+            {source: 0, target: 1},
+            {source: 1, target: 2},
+            {source: 2, target: 0}
+        ];
+
+        var svg = d3.select('body').append('svg')
+            .attr('width', width)
+            .attr('height', height);
+
+        var path = svg.append('svg:g').selectAll('path')
+            .data(links)
+            .enter().append('svg:path')
+            .attr('class', 'link');
+
+        var node = svg.selectAll('.node')
+            .data(nodes)
+            .enter().append('circle')
+            .attr('class', 'node')
+            .attr('cx', function(d, i) { return (i+1) * (width/4); })
+            .attr('cy', function(d, i) { return height / 2; })
+            .attr('r', width * 0.05);
+
+        var force = d3.layout.force()
+            .size([width, height])
+            .nodes(nodes)
+            .links(links)
+            .on('tick', tick)
+            .linkDistance(width/3)
+            .linkStrength(strength)
+            .start();
+
+        function tick() {
+            node.attr('cx', function(d) { return d.x; })
+                .attr('cy', function(d) { return d.y; })
+                .call(force.drag);
+
+            path.attr("d", function(d, i) {
+
+                var dx = d.target.x - d.source.x,
+                dy = d.target.y - d.source.y,
+
+                dr = Math.sqrt(dx * dx + dy * dy);
+
+                return "M" +
+                    d.source.x + "," +
+                    d.source.y + "A" +
+                    dr + "," + dr + " 0 0,1 " +
+                    d.target.x + "," +
+                    d.target.y;
+            });
+        }
+
+    </script>
+</body>
+
+</html>
