@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Loading Data</title>
+
+    <script src="d3.min.js"></script>
+</head>
+
+<body>
+
+
+    <script>
+        d3.json("tweets.json",function(data) {console.log(data)});
+
+        d3.csv("tweets.json", function(data) {
+            var tweetData = data.tweets;
+            var nestedTweets = d3.nest()
+                .key(function(el) {return el.user})
+                .entries(tweetData);
+        });
+    </script>
+</body>
+
+</html>
