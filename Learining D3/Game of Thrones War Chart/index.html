@@ -3,96 +3,203 @@
 
 <head>
 	<meta charset="UTF-8">
-	<title>Game of Thrones War Chart</title>
+	<script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7"
+		crossorigin="anonymous">
 	<style>
-		.node {
-            fill: #ccc;
-            stroke: #fff;
-            stroke-width: 2px;
-        }
-        path.link {
-            stroke: #777;
-            stroke-width: 2px;
-            fill: none;
-        }
+		.tooltip {
+			position: absolute;
+			max-width: 400px;
+			height: auto;
+			padding: 5px;
+			background-color: white;
+			-webkit-border-radius: 5px;
+			-moz-border-radius: 5px;
+			border-radius: 5px;
+			-webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+			-moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+			box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+			pointer-events: none;
+			/* MUY IMPORTANTE! */
+			font-family: sans-serif;
+			font-size: 12px;
+		}
+		
+		path.link {
+			fill: none;
+			stroke-width: 2px;
+		}
+		
+		path.link.win {
+			stroke: #a6d96a;
+		}
+		
+		path.link.loss {
+			stroke: #ca0020;
+		}
+		
+		text {
+			fill: #000;
+			font: 10px sans-serif;
+			pointer-events: none;
+		}
 	</style>
 </head>
 
-<body style="background: lightgray;">
+<body>
 	<p>Every battle beteween major houses and groups. Hover the line for details.</p>
-
-	<script src="http://d3js.org/d3.v3.min.js"></script>
 	<script>
-        var margin = 0.8,
-            width = window.innerWidth*margin,
-            height = window.innerHeight*margin;
-
+                // get the data
         d3.csv("battles.csv", function(error, links) {
 
-            var nodes = {};
+        var nodes = {};
 
-            links.forEach(function(link) {
-                link.source = nodes[link.source] ||
-                    (nodes[link.source] = {name: link.source});
-                link.target = nodes[link.target] || 
-                    (nodes[link.target] = {name: link.target});
-                link.value = +link.value;
-            });
+        // Compute the distinct nodes from the links.
+        links.forEach(function(link) {
+            link.source = nodes[link.source] ||
+                (nodes[link.source] = {name: link.source});
+            link.target = nodes[link.target] ||
+                (nodes[link.target] = {name: link.target});
+            link.value = +link.value;
+        });
 
-            var svg = d3.select('body').append('svg')
-                .attr('width', width)
-                .attr('height', height);
-        
-            var path = svg.append('svg:g').selectAll('path')
-                .data(links)
-                .enter().append('svg:path')
-                .attr('class', 'link');
+        //setup our window
+        var width = window.innerWidth*0.8,
+            height = window.innerHeight*0.8;
 
-            var node = svg.selectAll('.node')
-                .data(d3.values(nodes))
-                .enter().append('g')
-                .attr('class', 'node');                
+        //build the layout
+        var force = d3.layout.force()
+            .nodes(d3.values(nodes))
+            .links(links)
+            .size([width, height])
+            .linkDistance(100)
+            .charge(-1000)
+            .on("tick", tick)
+            .start();
+
+        var svg = d3.select("body").append("svg")
+            .attr("width", width)
+            .attr("height", height);
             
-            node.append("image")
+        //add hovercard
+        var hovercard = d3.select("body").append("div")
+            .attr("class", "tooltip")
+            .style("opacity", 0)
+            .style("width",400);
+
+        // build the arrow.
+        svg.append("svg:defs").selectAll("marker")
+            .data(["end"])      // Different link/path types can be defined here
+        .enter().append("svg:marker")    // This section adds in the arrows
+            .attr("id", String)
+            .attr("viewBox", "0 -5 10 10")
+            .attr("refX", 25)
+            .attr("refY", -1.5) 
+            .attr("markerWidth", 6)
+            .attr("markerHeight", 6)
+            .attr("orient", "auto")
+            .attr("fill", "#404040")
+        .append("svg:path")
+            .attr("d", "M0,-5L10,0L0,5");
+
+        // add the links and the arrows
+        var path = svg.append("svg:g").selectAll("path")
+            .data(force.links())
+        .enter().append("svg:path")
+            .attr("class", function(d) { return "link " + d.type; })
+            .attr("class", "link")
+            .attr("marker-end", "url(#end)");
+
+        // define the nodes
+        var node = svg.selectAll(".node")
+            .data(force.nodes())
+        .enter().append("g")
+            .attr("class", "node")
+            .call(force.drag);
+
+        // add the nodes matching the images
+        // node.append("circle")
+        //     .attr("r", 25)
+        node.append("image")
                 .attr("xlink:href", function(d) {  return "https://raw.githubusercontent.com/bsullins/got-images/master/img/"+encodeURI(d.name).toLowerCase().replace(/'/g, '')+".png"; })
-                .attr("x", function(d) { return -25; })
-                .attr("y", function(d) { return -25; })
+                .attr("x", function(d) { return -25;})
+                .attr("y", function(d) { return -25;})
                 .attr("height", 50)
                 .attr("width", 50);
 
-            var force = d3.layout.force()
-                .size([width, height])
-                .nodes(d3.values(nodes))
-                .links(links)
-                .on('tick', tick)
-                .linkDistance(140)
-                .charge(-300)
-                .start();
 
-            function tick() {
-                node.attr("transform", function(d) {
-                    return "translate(" + d.x + "," +d.y+ ")";})
-                    .call(force.drag);
+        // add the text
+        node.append("text")
+            .attr("text-anchor", "middle")
+            .attr("dy", ".35em")
+            .attr("y",-32)
+            .text(function(d) { return d.name; });
 
-                path.attr("d", function(d, i) {
+        // add the curvy lines
+        function tick() {
 
-                    var dx = d.target.x - d.source.x,
-                    dy = d.target.y - d.source.y,
-
+            
+            path.attr("d", function(d, i) {
+                
+                var dx = d.target.x - d.source.x + (i*10), //separate the lines
+                    dy = d.target.y - d.source.y + (i*10),
                     dr = Math.sqrt(dx * dx + dy * dy);
+                return "M" +
+                    d.source.x + "," +
+                    d.source.y + "A" +
+                    dr + "," + dr + " 0 0,1 " +
+                    d.target.x + "," +
+                    d.target.y;
+            });
+            
+            path.attr("class", function(d) { return "link "+ d.attacker_outcome});
+            
+            path.on("mouseover", function(d) {
+                
+                
+                hovercard.transition()
+                            .duration(500)
+                            .style("opacity", 1);
+            
+                        var tip = 
+                            "<h2>" + d.name + "</h2>" + 
+                            "<h4> " +d.source.name + " attacked " + d.target.name + " and the outcome was a " + d.attacker_outcome + "</h4>" +
+                            "<h3>Details</h3>" +
+                            "<strong> Attacker King: </strong>" + d.attacker_king + "<br/>" +
+                            "<strong> Battle Type: </strong>" + d.battle_type + "<br/>" +
+                            "<strong> Major Death?: </strong>" + d.major_death + "<br/>" +
+                            "<strong> Major Capture?: </strong>" + d.major_capture + "<br/>" +
+                            "<strong> Attacker Size: </strong>" + d.value + "<br/>" +
+                            "<strong> Defender Size: </strong>" + d.defender_size + "<br/>" +
+                            "<strong> Region / Location: </strong>" + d.region + " / " + d.location + "<br/>" +
+                            "<strong> Attacking Commander: </strong>" + d.attacker_commander + "<br/>" +
+                            "<strong> Defending Commander: </strong>" + d.defender_commander;
+                            
+                    
+                        hovercard.html(tip)
+                            .style("left", (d3.event.pageX) + "px")
+                            .style("top", (d3.event.pageY) + "px");
+                
+            });
+            
+            path.on("mouseout", function(d) {
 
-                    return "M" +
-                        d.source.x + "," +
-                        d.source.y + "A" +
-                        dr + "," + dr + " 0 0,1 " +
-                        d.target.x + "," +
-                        d.target.y;
-                });
-            }
-        })
-     
-           
-        
+                    hovercard.transition()
+                        .duration(500)
+                        .style("opacity", 0);
+            });
+            
+            node
+                .attr("transform", function(d) {
+                return "translate(" + d.x + "," + d.y + ")"; });
+                
+            
+        }
+
+        });
+
+
     </script>
 </body>
 
