@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Game of Thrones War Chart</title>
+	<style>
+		.node {
+            fill: #ccc;
+            stroke: #fff;
+            stroke-width: 2px;
+        }
+        path.link {
+            stroke: #777;
+            stroke-width: 2px;
+            fill: none;
+        }
+	</style>
+</head>
+
+<body style="background: lightgray;">
+	<p>Every battle beteween major houses and groups. Hover the line for details.</p>
+
+	<script src="http://d3js.org/d3.v3.min.js"></script>
+	<script>
+        var margin = 0.8,
+            width = window.innerWidth*margin,
+            height = window.innerHeight*margin;
+
+        d3.csv("battles.csv", function(error, links) {
+
+            var nodes = {};
+
+            links.forEach(function(link) {
+                link.source = nodes[link.source] ||
+                    (nodes[link.source] = {name: link.source});
+                link.target = nodes[link.target] || 
+                    (nodes[link.target] = {name: link.target});
+                link.value = +link.value;
+            });
+
+            var svg = d3.select('body').append('svg')
+                .attr('width', width)
+                .attr('height', height);
+        
+            var path = svg.append('svg:g').selectAll('path')
+                .data(links)
+                .enter().append('svg:path')
+                .attr('class', 'link');
+
+            var node = svg.selectAll('.node')
+                .data(d3.values(nodes))
+                .enter().append('circle')
+                .attr('class', 'node')
+                .attr('r', width * 0.02);
+
+            var force = d3.layout.force()
+                .size([width, height])
+                .nodes(d3.values(nodes))
+                .links(links)
+                .on('tick', tick)
+                .linkDistance(140)
+                .charge(-300)
+                .start();
+
+            function tick() {
+                node.attr('cx', function(d) { return d.x; })
+                    .attr('cy', function(d) { return d.y; })
+                    .call(force.drag);
+
+                path.attr("d", function(d, i) {
+
+                    var dx = d.target.x - d.source.x,
+                    dy = d.target.y - d.source.y,
+
+                    dr = Math.sqrt(dx * dx + dy * dy);
+
+                    return "M" +
+                        d.source.x + "," +
+                        d.source.y + "A" +
+                        dr + "," + dr + " 0 0,1 " +
+                        d.target.x + "," +
+                        d.target.y;
+                });
+            }
+        })
+     
+           
+        
+    </script>
+</body>
+
+</html>
