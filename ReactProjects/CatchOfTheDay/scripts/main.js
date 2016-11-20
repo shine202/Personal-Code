@@ -1,6 +1,13 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
 
+var ReactRouter = require('react-router');
+var Router = ReactRouter.Router;
+var Route = ReactRouter.Route;
+var Navigation = ReactRouter.Navigation;
+
+var createBrowserHistory = require('history/lib/createBrowserHistory');
+
 /*
 	App
 	This will let us make <App/>
@@ -11,7 +18,7 @@ var App = React.createClass({
 		return (
 			<div className="catch-of-the-day">
 				<div className="menu">
-					<Header />
+					<Header tagline="Fresh Seafood Market" />
 				</div>
 				<Order />
 				<Inventory />
@@ -27,7 +34,15 @@ var App = React.createClass({
 var Header = React.createClass({
 	render: function() {
 		return (
-			<p>Header </p>
+			<header className="top">
+				<h1>Catch 
+					<span className="ofThe">
+						<span className="of">of</span>
+						<span className="the">the</span>
+					</span>
+				Day</h1>
+				<h3 className="tagline"><span>{this.props.tagline}</span></h3>
+			</header>
 		)
 	}
 });
@@ -74,5 +89,27 @@ var StorePicker = React.createClass({
 	}
 });
 
+/*
+	Not Found
+*/
+var NotFound = React.createClass({
+	render: function() {
+		return <h1>404 Not Found!</h1>
+	}
+});
 
-ReactDOM.render(<App/>, document.querySelector('#main'));
+
+/* 
+	Routes
+*/
+var routes = (
+	<Router history={createBrowserHistory()}>
+		<Route path="/" component={StorePicker} />
+		<Route path="/store/:storeId" component={App} />
+		<Route path="*" component={NotFound} />
+	</Router>
+
+)
+
+
+ReactDOM.render(routes, document.querySelector('#main'));
