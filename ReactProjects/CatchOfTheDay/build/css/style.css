@@ -431,12 +431,12 @@ ul.order li.unavailable {
 ul.order li .price {
   font-size: 1.2rem;
 }
-ul.order li span {
+ul.order li span.count {
   position: relative;
   overflow: hidden;
   float: left;
 }
-ul.order li span span {
+ul.order li span.count span {
   display: inline-block;
 }
 .order-title {
